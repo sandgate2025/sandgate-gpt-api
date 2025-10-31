@@ -1,0 +1,9 @@
+{
+  "name": "sandgate-gpt-api",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@vercel/node": "^3.0.0",
+    "openai": "^4.58.0"
+  }
+}
