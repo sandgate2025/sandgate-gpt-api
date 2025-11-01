@@ -12,7 +12,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     if (req.method === 'OPTIONS') return res.status(200).end()
     if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' })
-
     if (!KEY) return res.status(500).json({ error: 'missing_api_key' })
 
     const body = (req.body || {}) as any
@@ -52,9 +51,8 @@ NG: 誇大広告/医療的断定/差別表現。`
       input: [
         { role: 'system', content: system },
         { role: 'user', content: prompt }
-      ],
-      // ✅ 新しい形式（2025年版仕様）
-      response_format: { type: 'json_object' }
+      ]
+      // ← ここに response_format / text は入れない
     })
 
     const text =
@@ -62,7 +60,7 @@ NG: 誇大広告/医療的断定/差別表現。`
       (rsp as any).choices?.[0]?.message?.content ||
       ''
 
-    let out
+    let out: any
     try { out = JSON.parse(text) }
     catch { out = { items: [{ body: String(text).slice(0, 300), thumb: '清潔感、正義' }] } }
 
