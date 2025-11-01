@@ -51,12 +51,15 @@ NG: 誇大広告/医療的断定/差別表現。`
       input: [
         { role: 'system', content: system },
         { role: 'user', content: prompt }
-      ]
-      // ← ここに response_format / text は入れない
+      ],
+      response: {
+        output_format: { type: 'json_object' } // ✅ ← 正しい新仕様
+      }
     })
 
     const text =
       (rsp as any).output_text ||
+      (rsp as any).output[0]?.content[0]?.text ||
       (rsp as any).choices?.[0]?.message?.content ||
       ''
 
