@@ -32,7 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const client = new OpenAI({ apiKey: KEY });
 
     const system = `あなたはメンズ美容室（SANDGATE/福井）向けのSNSコピーライター。
-スクロール停止フック→心理トリガー→好奇心ギャップ→強いCTA→適切なタグ、の順で
+スクロール停止フック→心理トリガー→好奇心ギャップ→強いCTA→適切なタグの順で
 短く鋭い日本語コピーを作る。縦長サムネ文言は8〜16字で強ワード中心。
 NG: 誇大広告/医療的断定/差別表現。`;
 
@@ -61,8 +61,6 @@ NG: 誇大広告/医療的断定/差別表現。`;
         { role: "system", content: system },
         { role: "user", content: prompt },
       ],
-      // ✅ 最新仕様（2025年版）
-      response: { output_format: { type: "json_object" } },
     });
 
     const text =
@@ -71,7 +69,7 @@ NG: 誇大広告/医療的断定/差別表現。`;
       (rsp as any).choices?.[0]?.message?.content ||
       "";
 
-    // コードブロックを除去してJSONとして整形
+    // コードブロックを除去してJSON化
     const cleaned = text.replace(/```json/g, "").replace(/```/g, "").trim();
 
     let out: any;
