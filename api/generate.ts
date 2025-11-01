@@ -14,6 +14,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' })
 
     if (!KEY) return res.status(500).json({ error: 'missing_api_key' })
+
     const body = (req.body || {}) as any
     const {
       target, pain, tone, cta, brand, bookUrl,
@@ -37,7 +38,14 @@ NG: 誇大広告/医療的断定/差別表現。`
 - 固定タグ: ${(fixedTags || []).join(' ')}
 - 追加タグ: ${(extraTags || []).join(' ')}
 - 文字数上限: ${lengthLimit || '制限なし'}
-- 本数: ${count}`
+- 本数: ${count}
+
+要件:
+- 構文/語彙/語尾を十分にゆらし、重複を避ける
+- thumb(8〜16字の強ワード) と body(60〜120字基準、上限があれば優先)
+- body末尾にタグ1行（固定＋ローカル/フェード系を適度に）
+- 予約URLがあればCTA行の末尾に "→ URL"
+- 出力は JSON: { "items": [ { "body": "...", "thumb": "..." }, ... ] }`
 
     const rsp = await client.responses.create({
       model: MODEL,
@@ -45,7 +53,8 @@ NG: 誇大広告/医療的断定/差別表現。`
         { role: 'system', content: system },
         { role: 'user', content: prompt }
       ],
-      text: { format: 'json' } // ✅ ← ここ変更
+      // ✅ 新しい形式（2025年版仕様）
+      response_format: { type: 'json_object' }
     })
 
     const text =
